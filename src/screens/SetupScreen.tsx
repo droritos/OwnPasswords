@@ -54,7 +54,8 @@ export function SetupScreen() {
     <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-5 py-10 pt-safe">
       <div className="mb-8 flex flex-col items-center text-center">
         <Logo className="mb-5 h-20 w-20 drop-shadow-xl" />
-        <h1 className="text-2xl font-bold tracking-tight">Create your vault</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Welcome to Vaultly</h1>
+        <p className="mt-1 text-sm font-medium text-brand-400">Your little keeper of secrets</p>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           Choose a strong master password. It encrypts everything on this device and{' '}
           <strong className="text-slate-700 dark:text-slate-200">cannot be recovered</strong> if you forget it.

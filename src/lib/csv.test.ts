@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { entriesFromCSV, parseCSV } from './csv';
+import { detectDelimiter, entriesFromCSV, parseCSV } from './csv';
 import { mergeVaults, normalizeEntry, safeHttpUrl } from './vaultModel';
 
 describe('CSV parsing', () => {
@@ -21,6 +21,26 @@ describe('CSV parsing', () => {
     const csv = 'login_password,login_uri,login_username,name\npw,https://www.example.com/login,me,\n';
     const [e] = entriesFromCSV(csv);
     expect(e).toMatchObject({ title: 'example.com', username: 'me', password: 'pw' });
+  });
+
+  it('detects semicolon-separated files', () => {
+    const csv = 'Title;User Name;Password;URL;Notes;Category\r\nBank;alice;p;w;"https://bank.test";"a; b";Finance\r\n';
+    expect(detectDelimiter(csv)).toBe(';');
+    const [e] = entriesFromCSV('Title;User Name;Password;URL;Notes;Category\nBank;alice;p;w;https://bank.test\n');
+    expect(e).toMatchObject({ title: 'Bank', username: 'alice', password: 'p' });
+  });
+
+  it('detects tab-separated files and ignores header case/spacing', () => {
+    const tsv = 'Account Name\tE-mail\tPassword\tWebsite\tGroup\nNetflix\tme@x.com\tpw,with,commas\tnetflix.com\tSocial\n';
+    expect(detectDelimiter(tsv)).toBe('\t');
+    const [e] = entriesFromCSV(tsv);
+    expect(e).toMatchObject({
+      title: 'Netflix',
+      username: 'me@x.com',
+      password: 'pw,with,commas',
+      url: 'netflix.com',
+      category: 'Social',
+    });
   });
 
   it('assumes name,url,username,password when there is no header', () => {

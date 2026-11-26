@@ -1,8 +1,33 @@
 import { normalizeEntry } from './vaultModel';
 import type { Entry } from './types';
 
-/** RFC 4180-style CSV parser (quoted fields, escaped quotes, CRLF/LF, newlines in quotes). */
-export function parseCSV(text: string): string[][] {
+export type Delimiter = ',' | ';' | '\t';
+
+/**
+ * Guesses the separator from the first line (outside quotes).
+ * Handles comma-separated, semicolon-separated (common in European locales /
+ * Excel) and tab-separated exports.
+ */
+export function detectDelimiter(text: string): Delimiter {
+  const src = text.replace(/^﻿/, '');
+  const counts: Record<Delimiter, number> = { ',': 0, ';': 0, '\t': 0 };
+  let inQuotes = false;
+  for (let i = 0; i < src.length; i++) {
+    const c = src[i];
+    if (c === '"') inQuotes = !inQuotes;
+    else if (!inQuotes) {
+      if (c === '\n' || c === '\r') {
+        if (counts[','] + counts[';'] + counts['\t'] > 0) break;
+      } else if (c === ',' || c === ';' || c === '\t') counts[c]++;
+    }
+  }
+  if (counts['\t'] > 0 && counts['\t'] >= counts[',']) return '\t';
+  if (counts[';'] > counts[',']) return ';';
+  return ',';
+}
+
+/** RFC 4180-style parser (quoted fields, escaped quotes, CRLF/LF, newlines in quotes). */
+export function parseCSV(text: string, delimiter: Delimiter = detectDelimiter(text)): string[][] {
   const rows: string[][] = [];
   let row: string[] = [];
   let field = '';
@@ -20,8 +45,8 @@ export function parseCSV(text: string): string[][] {
       } else field += c;
       continue;
     }
-    if (c === '"') inQuotes = true;
-    else if (c === ',') {
+    if (c === '"' && field === '') inQuotes = true;
+    else if (c === delimiter) {
       row.push(field);
       field = '';
     } else if (c === '\n' || c === '\r') {
@@ -41,30 +66,35 @@ export function parseCSV(text: string): string[][] {
 
 type Field = 'title' | 'url' | 'username' | 'password' | 'notes' | 'category';
 
+/** Header names are compared lower-cased with spaces, dashes and underscores removed. */
 const HEADER_ALIASES: Record<Field, string[]> = {
-  title: ['name', 'title', 'account', 'site', 'service'],
-  url: ['url', 'website', 'login_uri', 'uri', 'web site', 'link'],
-  username: ['username', 'user', 'login', 'login_username', 'email', 'user name'],
-  password: ['password', 'login_password', 'pass'],
-  notes: ['note', 'notes', 'extra', 'comment', 'comments'],
-  category: ['category', 'folder', 'group', 'grouping'],
+  title: ['name', 'title', 'account', 'accountname', 'site', 'sitename', 'service', 'entry', 'item', 'label'],
+  url: ['url', 'website', 'web', 'site url', 'siteurl', 'websiteurl', 'loginuri', 'uri', 'link', 'address', 'domain'],
+  username: ['username', 'user', 'userid', 'login', 'loginname', 'loginusername', 'email', 'emailaddress', 'mail'],
+  password: ['password', 'loginpassword', 'pass', 'passwd', 'pwd', 'secret'],
+  notes: ['note', 'notes', 'extra', 'comment', 'comments', 'description', 'remarks', 'info'],
+  category: ['category', 'folder', 'group', 'grouping', 'type', 'tag', 'tags'],
 };
 
+const normHeader = (h: string) => h.trim().toLowerCase().replace(/[\s_\-.]+/g, '');
+
 /**
- * Imports a plain CSV. Recognises common exports (Chrome, Firefox, Bitwarden,
- * 1Password, LastPass) by header; without a header assumes `name,url,username,password`.
+ * Imports a plain CSV/TSV. Recognises common exports (My Passwords, Google/Chrome,
+ * Firefox, Bitwarden, 1Password, LastPass, Samsung Pass) by header, in any column
+ * order. Without a header it assumes `name,url,username,password[,notes]`.
  */
 export function entriesFromCSV(text: string): Entry[] {
   const rows = parseCSV(text);
   if (!rows.length) return [];
 
-  const header = rows[0].map((h) => h.trim().toLowerCase());
+  const header = rows[0].map(normHeader);
   const map: Partial<Record<Field, number>> = {};
   for (const field of Object.keys(HEADER_ALIASES) as Field[]) {
-    const idx = header.findIndex((h) => HEADER_ALIASES[field].includes(h));
+    const aliases = HEADER_ALIASES[field].map(normHeader);
+    const idx = header.findIndex((h, i) => aliases.includes(h) && !Object.values(map).includes(i));
     if (idx >= 0) map[field] = idx;
   }
-  const hasHeader = map.password !== undefined || (map.title !== undefined && map.username !== undefined);
+  const hasHeader = map.password !== undefined || Object.keys(map).length >= 2;
   const columns: Partial<Record<Field, number>> = hasHeader
     ? map
     : { title: 0, url: 1, username: 2, password: 3, notes: 4 };
@@ -72,7 +102,7 @@ export function entriesFromCSV(text: string): Entry[] {
 
   const get = (row: string[], f: Field) => {
     const i = columns[f];
-    return i === undefined ? '' : (row[i] ?? '');
+    return i === undefined ? '' : (row[i] ?? '').trim();
   };
 
   return body
@@ -81,7 +111,7 @@ export function entriesFromCSV(text: string): Entry[] {
         title: get(row, 'title'),
         url: get(row, 'url'),
         username: get(row, 'username'),
-        password: get(row, 'password'),
+        password: columns.password === undefined ? '' : (row[columns.password] ?? ''),
         notes: get(row, 'notes'),
         category: get(row, 'category'),
       }),

@@ -1,9 +1,9 @@
-# OwnPasswords
+# Vaultly
 
-An offline-first, zero-knowledge password manager that runs as an installable PWA.
+Vaultly is a cute, offline-first, zero-knowledge password manager that runs as an installable PWA.
 Everything is encrypted on your device with the Web Crypto API. There is no backend, no account and no network calls.
 
-**Live:** `https://<your-github-user>.github.io/OwnPasswords/`
+**Live:** https://droritos.github.io/OwnPasswords/
 
 ## Features
 

@@ -23,9 +23,9 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         id: BASE,
-        name: 'OwnPasswords',
-        short_name: 'Passwords',
-        description: 'Offline, zero-knowledge password manager. Your vault never leaves your device.',
+        name: 'Vaultly',
+        short_name: 'Vaultly',
+        description: 'Vaultly — a cute, offline, zero-knowledge password keeper. Your secrets never leave your device.',
         start_url: BASE,
         scope: BASE,
         display: 'standalone',

@@ -84,8 +84,8 @@ export async function registerBiometric(vaultKey: CryptoKey): Promise<BiometricW
   const extensions: PrfInputs = { prf: { eval: { first: prfSalt } } };
   const credential = (await navigator.credentials.create({
     publicKey: {
-      rp: { name: 'OwnPasswords' },
-      user: { id: randomBytes(16), name: 'OwnPasswords vault', displayName: 'OwnPasswords vault' },
+      rp: { name: 'Vaultly' },
+      user: { id: randomBytes(16), name: 'Vaultly vault', displayName: 'Vaultly vault' },
       challenge: randomBytes(32),
       pubKeyCredParams: [
         { type: 'public-key', alg: -7 }, // ES256

@@ -1,17 +1,29 @@
+/** Vaultly mascot: a little guardian that keeps your secrets (keyhole belly). */
 export function Logo({ className = 'h-16 w-16' }: { className?: string }) {
   return (
     <svg viewBox="0 0 512 512" className={className} aria-hidden>
       <defs>
-        <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#6366f1" />
-          <stop offset="1" stopColor="#8b5cf6" />
+        <linearGradient id="vaultly-bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#4f46e5" />
+          <stop offset="1" stopColor="#a855f7" />
         </linearGradient>
       </defs>
-      <rect width="512" height="512" rx="112" fill="url(#logo-g)" />
-      <path d="M176 232v-48a80 80 0 0 1 160 0v48" fill="none" stroke="#fff" strokeWidth="36" strokeLinecap="round" />
-      <rect x="136" y="224" width="240" height="176" rx="36" fill="#fff" />
-      <circle cx="256" cy="296" r="26" fill="#6366f1" />
-      <rect x="244" y="300" width="24" height="52" rx="12" fill="#6366f1" />
+      <rect width="512" height="512" rx="112" fill="url(#vaultly-bg)" />
+      <circle cx="158" cy="170" r="52" fill="#ede9fe" />
+      <circle cx="354" cy="170" r="52" fill="#ede9fe" />
+      <circle cx="158" cy="170" r="26" fill="#c4b5fd" />
+      <circle cx="354" cy="170" r="26" fill="#c4b5fd" />
+      <ellipse cx="256" cy="292" rx="168" ry="150" fill="#f5f3ff" />
+      <ellipse cx="256" cy="385" rx="70" ry="48" fill="#ddd6fe" />
+      <circle cx="256" cy="372" r="17" fill="#6d28d9" />
+      <rect x="249" y="378" width="14" height="34" rx="7" fill="#6d28d9" />
+      <ellipse cx="204" cy="262" rx="24" ry="30" fill="#1e1b4b" />
+      <ellipse cx="308" cy="262" rx="24" ry="30" fill="#1e1b4b" />
+      <circle cx="213" cy="250" r="9" fill="#fff" />
+      <circle cx="317" cy="250" r="9" fill="#fff" />
+      <ellipse cx="164" cy="312" rx="26" ry="15" fill="#f9a8d4" />
+      <ellipse cx="348" cy="312" rx="26" ry="15" fill="#f9a8d4" />
+      <path d="M236 300 Q256 318 276 300" fill="none" stroke="#1e1b4b" strokeWidth="8" strokeLinecap="round" />
     </svg>
   );
 }

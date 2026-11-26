@@ -61,5 +61,5 @@ export async function shareFile(file: File): Promise<boolean> {
 
 export function backupFilename(date = new Date()): string {
   const d = date.toISOString().slice(0, 10);
-  return `ownpasswords-${d}.vault.enc`;
+  return `vaultly-${d}.vault.enc`;
 }

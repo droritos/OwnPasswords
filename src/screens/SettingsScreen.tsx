@@ -135,7 +135,9 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
   };
 
   const chooseCsv = async () => {
-    const file = await withPausedLock(() => pickFile('.csv,text/csv,text/plain'));
+    const file = await withPausedLock(() =>
+      pickFile('.csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain'),
+    );
     if (!file) return;
     try {
       const entries = entriesFromCSV(await file.text());
@@ -194,8 +196,8 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
           />
           <Row
             icon={<FileSpreadsheet className="h-5 w-5" />}
-            title="Import from CSV"
-            subtitle="name, url, username, password — encrypted immediately"
+            title="Import from another app"
+            subtitle="CSV / TSV (comma, semicolon or tab) — encrypted immediately"
             onClick={chooseCsv}
           />
         </Section>
@@ -340,7 +342,7 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
 
         <div className="space-y-1 pb-4 text-center text-xs text-slate-400">
           <p>
-            OwnPasswords v{__APP_VERSION__} · {entryCount} {entryCount === 1 ? 'entry' : 'entries'}
+            Vaultly v{__APP_VERSION__} · {entryCount} {entryCount === 1 ? 'entry' : 'entries'}
           </p>
           <p>
             AES-256-GCM · PBKDF2-SHA256 ({PBKDF2_ITERATIONS.toLocaleString()} iterations) · zero-knowledge, offline

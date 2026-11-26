@@ -21,7 +21,7 @@ export const MIN_ITERATIONS = 100_000;
 export const MAX_ITERATIONS = 10_000_000;
 export const KDF_ID = 'PBKDF2-SHA256' as const;
 export const FORMAT_VERSION = 1 as const;
-export const BACKUP_APP_ID = 'OwnPasswords' as const;
+export const BACKUP_APP_ID = 'Vaultly' as const;
 const SALT_BYTES = 16;
 const IV_BYTES = 12;
 
