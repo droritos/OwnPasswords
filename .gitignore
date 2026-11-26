@@ -1,0 +1,12 @@
+node_modules
+dist
+dev-dist
+coverage
+*.local
+.vite
+.DS_Store
+Thumbs.db
+*.log
+# never commit vault exports or plaintext imports
+*.vault.enc
+*.csv
